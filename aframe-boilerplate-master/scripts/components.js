@@ -2,6 +2,25 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
+
 // Components
 AFRAME.registerComponent("crazyrems", {
     schema: {},
@@ -18,7 +37,7 @@ AFRAME.registerComponent("crazyrems", {
 AFRAME.registerComponent("game-manager", {
     schema: {
         level: {
-            type: "int", default: 4
+            type: "int", default: 0
         }
     },
     init: function () {
@@ -60,7 +79,7 @@ AFRAME.registerComponent("game-manager", {
         }
         newKube.setAttribute("appear-scale", animProps.join(";"));
         if (interactable === true) {
-            // newKube.setAttribute("material", "color: #888");
+            newKube.setAttribute("material", "color: #888");
             if (data != undefined && data.selection != undefined) {
                 newKube.setAttribute(data.selection, "");
             }
@@ -72,7 +91,14 @@ AFRAME.registerComponent("game-manager", {
         kubeParent.setAttribute("position", position);
 
         kubeParent.appendChild(newKube);
-        this.el.appendChild(kubeParent);
+
+        if (data != undefined && data.parent != undefined) {
+            data.parent.appendChild(kubeParent);
+        }
+        else {
+            this.el.appendChild(kubeParent);
+        }
+
         this.allKubes.push(kubeParent);
         return kubeParent;
     },
@@ -115,17 +141,16 @@ AFRAME.registerComponent("game-manager", {
                         for (var i=0; i<4; i+=1) {
                             var count = (i + (4*j));
                             var coord = {x: 0.25 + ((i-2) * 0.5), y: 1.5 + (j * 0.5), z: -1.5}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*count});
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*count });
                             kn.setAttribute("wobble-rotation", "delay: " + (200*count));
                         }
                     }
                     break;
 
                 case 4:
-                    
                     var rndm = getRandomInt(0, 11);
                     for (var i=0; i<12; i+=1) {
-                        console.log("create kube");
+                        // console.log("create kube");
                         var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
                         var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i });
                         kn.setAttribute("wobble-rotation", "delay: " + (200*i) + "; duration: 1200;");
@@ -139,6 +164,57 @@ AFRAME.registerComponent("game-manager", {
                     k2.setAttribute("wobble-rotation", "delay: 300");
                     var k3 = this.spawnKube("1 1.5 -1.5", false, { delay: 600 });
                     k3.setAttribute("wobble-rotation", "delay: 600");
+                    break;
+
+                case 6:
+                    var rndm = getRandomInt(0, 7);
+                    for (var i=0; i<8; i += 1) {
+                        var coord = {x: (-0.35 * 3.5) + (i * 0.35), y: 1.5, z: -1.5}
+                        var coordUp = {x: (-0.35 * 3.5) + (i * 0.35), y: 2.5, z: -1.5}
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i });
+                        kn.setAttribute("wobble-rotation", "delay: " + (200*i));
+                        kn.setAttribute("animation__updown", "property: position; easing: easeInOutSine; dir: alternate; loop: true; dur: 2400; delay: " + (i * 300) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: " + AFRAME.utils.coordinates.stringify(coordUp));
+                    }
+                    break;
+
+                case 7:
+                    var rndm = getRandomInt(0, 11);
+                    let carousel = document.createElement('a-entity');
+                    carousel.setAttribute("animation__carousel", "property: rotation; dir: normal; dur: 20000; easing: linear; from: 0 0 0; to: 0 360 0; loop: true;");
+                    this.el.appendChild(carousel);
+                    for (var i=0; i<12; i+=1) {
+                        // console.log("create kube");
+                        var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i, parent: carousel });
+                        kn.setAttribute("wobble-rotation", "delay: " + (200*i) + "; duration: 1200;");
+                    }
+                    break;
+                
+                case 8:
+                    var rndm = getRandomInt(0, 39);
+                    for (var j=0; j<5; j+=1) {
+                        for (var i=0; i<8; i += 1) {
+                            var count = (8*j)+i;
+                            var coord = {x: (-0.35 * 3.5) + (i * 0.35), y: 2.6 - (j * 0.35), z: -1.5}
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+j) });
+                            kn.setAttribute("wobble-rotation", "delay: "+200*(i+j));
+                        }
+                    }
+                    break;
+
+                case 9:
+                    var rndm = getRandomInt(0, 15);
+                    var delays = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+                    for (var j=0; j<4; j+=1) {
+                        for (var i=0; i<4; i += 1) {
+                            var count = (4*j)+i;
+                            var coord = {x: 3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35)}
+                            var coordend = {x: -3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35)}
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+(j*4)) });
+                            kn.setAttribute("wobble-rotation", "delay: "+200*(i+j*4));
+                            kn.setAttribute("animation__scrolling", "property: position; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: "+ AFRAME.utils.coordinates.stringify(coordend) + ";");
+                        }
+                    }
                     break;
             }
         }, 2000);
@@ -157,35 +233,42 @@ AFRAME.registerComponent("game-manager", {
                 }
             }, 5000);
         });
+
+        setTimeout(() => {
+            this.nextLevel();
+        }, 2000);
+        this.el.removeAttribute("sound__static");
+        this.el.setAttribute("sound__rime", "src: url(sounds/rimes.mp3); autoplay: true; loop: true;");
+        this.el.setAttribute("sound__noise", "src: url(sounds/beatnoise.mp3); autoplay: true; loop: true;");
     }
 });
 
 // All kinds of kubes
 AFRAME.registerComponent("grow-viral-selection", {
     init: function () {
-        var event_gv;
-        var event_le;
-        listener_gv = this.el.addEventListener("mouseenter", (event) => {
+        this.event_gv = (event) => {
             this.el.removeAttribute("sound__deflate");
             this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
             this.el.removeAttribute("animation__deflate");
             this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 5000; easing: easeInQuad; to: 3, 3, 3;");
-        });
+        };
+        this.el.addEventListener("mouseenter", this.event_gv);
 
-        listener_le = this.el.addEventListener("mouseleave", (event) => {
+        this.event_le = (event) => {
             this.el.removeAttribute("animation__grow_viral");
             this.el.removeAttribute("sound__rise");
             this.el.setAttribute("animation__deflate", "property: scale; dir: normal; dur: 700; easing: easeOutExpo; to: 1, 1, 1;");
             if (this.el.components.scale.data.x > 1.2) {
                 this.el.setAttribute("sound__deflate", "src: url(sounds/deflate.mp3); autoplay: true; loop: false;");
             }
-        });
+        };
+        this.el.addEventListener("mouseleave", this.event_le);
 
         this.el.addEventListener("animation__grow_viral-complete", (event) => {
             // this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
             document.querySelector('#gameManager').emit("part2");
-            this.el.removeEventListener("mouseenter", event_gv);
-            this.el.removeEventListener("mouseleave", event_le);
+            this.el.removeEventListener("mouseenter", this.event_gv);
+            this.el.removeEventListener("mouseleave", this.event_le);
         });
     }
 });
@@ -210,29 +293,28 @@ AFRAME.registerComponent("color-highlight", {
 AFRAME.registerComponent("valid-selection", {
     schema: { },
     init: function () {
-        var event_me;
-        var event_ml;
-        
-        event_me = this.el.addEventListener("mouseenter", (event) => {
+        this.event_me = (event) => {
             this.el.removeAttribute("animation__appear_scale");
             this.el.removeAttribute("animation__deflate_valid_scale");
             // this.el.removeAttribute("animation__deflate_valid_color");
             this.el.setAttribute("animation__grow_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1.3, 1.3, 1.3;");
             // this.el.setAttribute("animation__grow_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
-        });
+        };
+        this.el.addEventListener("mouseenter", this.event_me);
         
-        event_ml = this.el.addEventListener("mouseleave", (event) => {
+        this.event_ml = (event) => {
             this.el.removeAttribute("animation__grow_valid_scale");
             // this.el.removeAttribute("animation__grow_valid_color");
             this.el.setAttribute("animation__deflate_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1, 1, 1;");
             // this.el.setAttribute("animation__deflate_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
-        });
+        };
+        this.el.addEventListener("mouseleave", this.event_ml);
         
         this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
             this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
             document.querySelector('#gameManager').emit("nextlevel");
-            this.el.removeEventListener("mouseenter", event_me);
-            this.el.removeEventListener("mouseleave", event_ml);
+            this.el.removeEventListener("mouseenter", this.event_me);
+            this.el.removeEventListener("mouseleave", this.event_ml);
         });
     }
 });
@@ -259,8 +341,7 @@ AFRAME.registerComponent("wobble-rotation", {
         }
     },
     init: function () {
-        this.el.setAttribute("animation__wiggle", "property: rotation; easing: easeInOutSine; from: -5 -5 -5; to: 5 5 5; dir: alternate; delay: " + this.data.delay + "; dur: " + this.data.duration + "; loop: true;");
-        // this.el.setAttribute("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
+        this.el.setAttribute("animation__wiggle", "property: rotation; easing: easeInOutSine; from: -8 -8 -8; to: 8 8 8; dir: alternate; delay: " + this.data.delay + "; dur: " + this.data.duration + "; loop: true;");
     }
 });
 
