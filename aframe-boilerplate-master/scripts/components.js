@@ -37,7 +37,9 @@ AFRAME.registerComponent("game-manager", {
     tick: function () { },
     remove: function () { },
     pause: function () { },
-    play: function () { },
+    play: function () {
+        //this.el.setAttribute("sound__static", "src: url(sounds/static.mp3); autoplay: true; loop: false;");
+    },
     spawnKube: function (position, interactable = false, data) {
         let newKube = document.createElement('a-box');
         newKube.setAttribute("width", "0.2");
@@ -90,32 +92,34 @@ AFRAME.registerComponent("game-manager", {
 
         console.log("Next level");
         // remove all kubes
+        console.log("remove "+ this.allKubes.length +" kubes");
         this.allKubes.forEach(element => {
             element.setAttribute("animation__remove", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 1000; easing: easeOutExpo;")
             setTimeout(() => {
-                element.addEventListener("animation__remove-complete", function () {
+                if (element.parentNode != undefined || element.parentNode != null) {
+                    console.log("removing kube");
                     element.parentNode.removeChild(element);
-                });
+                }
             }, 5000);
         });
 
         // prepare next level
-        //setTimeout(() => {
+        setTimeout(() => {
             this.data.level += 1;
             console.log("creating level "+this.data.level);
             switch (this.data.level) { // create the levels
                 case 1:
-                    var k1 = this.spawnKube("0 1.5 -1.5", true, { delay: 2000 });
+                    var k1 = this.spawnKube("0 1.5 -1.5", true);
                     k1.setAttribute("wobble-rotation", "");
                     break;
 
                 case 2:
-                    var k1 = this.spawnKube("-1 1.5 -1.5", false, { delay: 2000 });
-                    k1.setAttribute("wobble-rotation", "delay: 2000");
-                    var k2 = this.spawnKube("0 1.5 -1.5", false, { delay: 2300 });
-                    k2.setAttribute("wobble-rotation", "delay: 2300");
-                    var k3 = this.spawnKube("1 1.5 -1.5", true, { delay: 2600 });
-                    k3.setAttribute("wobble-rotation", "delay: 2600");
+                    var k1 = this.spawnKube("-1 1.5 -1.5", false);
+                    k1.setAttribute("wobble-rotation", "");
+                    var k2 = this.spawnKube("0 1.5 -1.5", false, { delay: 300 });
+                    k2.setAttribute("wobble-rotation", "delay: 300");
+                    var k3 = this.spawnKube("1 1.5 -1.5", true, { delay: 600 });
+                    k3.setAttribute("wobble-rotation", "delay: 600");
                     break;
                 
                 case 3:
@@ -124,8 +128,8 @@ AFRAME.registerComponent("game-manager", {
                         for (var i=0; i<4; i+=1) {
                             var count = (i + (4*j));
                             var coord = {x: 0.25 + ((i-2) * 0.5), y: 1.5 + (j * 0.5), z: -1.5}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 2000 + (200*count)});
-                            kn.setAttribute("wobble-rotation", "delay: " + (2000 + (200*count)));
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*count});
+                            kn.setAttribute("wobble-rotation", "delay: " + (200*count));
                         }
                     }
                     break;
@@ -136,21 +140,21 @@ AFRAME.registerComponent("game-manager", {
                     for (var i=0; i<12; i+=1) {
                         console.log("create kube");
                         var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
-                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 2000 + (200*i) });
-                        kn.setAttribute("wobble-rotation", "delay: " + (2000 + (200*i)) + "; duration: 1200;");
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i });
+                        kn.setAttribute("wobble-rotation", "delay: " + (200*i) + "; duration: 1200;");
                     }
                     break;
 
                 case 5:
-                    var k1 = this.spawnKube("-1 1.5 -1.5", false, { delay: 2000});
-                    k1.setAttribute("wobble-rotation", "delay: 2000");
-                    var k2 = this.spawnKube("0 1.5 -1.5", true, { delay: 2300, selection: "grow-viral-selection" });
-                    k2.setAttribute("wobble-rotation", "delay: 2300");
-                    var k3 = this.spawnKube("1 1.5 -1.5", false, { delay: 2600 });
-                    k3.setAttribute("wobble-rotation", "delay: 2600");
+                    var k1 = this.spawnKube("-1 1.5 -1.5", false);
+                    k1.setAttribute("wobble-rotation", "");
+                    var k2 = this.spawnKube("0 1.5 -1.5", true, { delay: 300, selection: "grow-viral-selection" });
+                    k2.setAttribute("wobble-rotation", "delay: 300");
+                    var k3 = this.spawnKube("1 1.5 -1.5", false, { delay: 600 });
+                    k3.setAttribute("wobble-rotation", "delay: 600");
                     break;
             }
-        //}, 2000);
+        }, 2000);
     }
 });
 
@@ -204,7 +208,7 @@ AFRAME.registerComponent("valid-selection", {
             this.el.removeEventListener("mouseenter", event_me);
             this.el.removeEventListener("mouseleave", event_ml);
         });
-        
+
         event_me = this.el.addEventListener("mouseenter", (event) => {
             this.el.removeAttribute("animation__appear_scale");
             this.el.removeAttribute("animation__deflate_valid_scale");
@@ -300,13 +304,15 @@ AFRAME.registerComponent("wobble-rotation", {
 AFRAME.registerComponent("start-title-manager", {
     schema: {},
     init: function () {
+        let gameManager = document.querySelector('#gameManager');
+        gameManager.setAttribute("sound__static", "src: url(sounds/static2.mp3); autoplay: true; loop: true;");
         this.el.addEventListener("click", (event) => {
-            let gameManager = document.querySelector('#gameManager');
-            gameManager.setAttribute("sound", "src: url(sounds/arpegio.mp3); autoplay: true; loop: false;");
+            gameManager.setAttribute("sound__start", "src: url(sounds/arpegio.mp3); autoplay: true; loop: false;");
             this.el.parentNode.removeChild(this.el);
-            // console.log(document.querySelector('#gameManager'));
             gameManager.emit("nextlevel");
         });
+    },
+    start: function() {
     }
 });
 
