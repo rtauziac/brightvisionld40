@@ -37,11 +37,19 @@ AFRAME.registerComponent("crazyrems", {
 AFRAME.registerComponent("game-manager", {
     schema: {
         level: {
-            type: "int", default: 0
+            type: "int", default: 8
         }
     },
     init: function () {
         this.allKubes = [];
+        this.kube9PositionsIndex = 0;
+        this.kube9Positions = [
+            "-0.7 1. -1.5",
+            "-0.7 2.6 -1.5",
+            "0.7 1 -1.5",
+            "0.7 2.6 -1.5",
+            "0 1.8 -1.5"
+        ]
         setTimeout(() => {
             let startTitle = document.createElement('a-start-title');
             startTitle.setAttribute("position", "0 2.3 -2");
@@ -57,7 +65,16 @@ AFRAME.registerComponent("game-manager", {
         });
     },
     update: function () { },
-    tick: function () { },
+    tick: function (time, timeDelta) {
+        if (this.kube9Timer != undefined) {
+            this.kube9Timer += timeDelta;
+            if (this.kube9Timer >= 1450) {
+                this.kube9PositionsIndex = (this.kube9PositionsIndex + 1) % this.kube9Positions.length;
+                this.kube9Timer = 0;
+                this.kube9.setAttribute("position", this.kube9Positions[this.kube9PositionsIndex]);
+            }
+        }
+    },
     remove: function () { },
     pause: function () { },
     play: function () {
@@ -84,7 +101,12 @@ AFRAME.registerComponent("game-manager", {
                 newKube.setAttribute(data.selection, "");
             }
             else {
-                newKube.setAttribute("valid-selection", "");
+                if (data != undefined && data.soundEffect != undefined) {
+                    newKube.setAttribute("valid-selection", "soundEffect: " + data.soundEffect);
+                }
+                else {
+                    newKube.setAttribute("valid-selection", "");
+                }
             }
         }
         let kubeParent = document.createElement('a-entity');
@@ -115,6 +137,9 @@ AFRAME.registerComponent("game-manager", {
                 }
             }, 5000);
         });
+
+        this.kube9 = undefined;
+        this.kube9Timer = undefined;
 
         // prepare next level
         setTimeout(() => {
@@ -158,12 +183,9 @@ AFRAME.registerComponent("game-manager", {
                     break;
 
                 case 5:
-                    var k1 = this.spawnKube("-1 1.5 -1.5", false);
+
+                    var k1 = this.spawnKube("0 1.5 -1.5", true, { selection: "grow-viral-selection" });
                     k1.setAttribute("wobble-rotation", "");
-                    var k2 = this.spawnKube("0 1.5 -1.5", true, { delay: 300, selection: "grow-viral-selection" });
-                    k2.setAttribute("wobble-rotation", "delay: 300");
-                    var k3 = this.spawnKube("1 1.5 -1.5", false, { delay: 600 });
-                    k3.setAttribute("wobble-rotation", "delay: 600");
                     break;
 
                 case 6:
@@ -171,7 +193,7 @@ AFRAME.registerComponent("game-manager", {
                     for (var i=0; i<8; i += 1) {
                         var coord = {x: (-0.35 * 3.5) + (i * 0.35), y: 1.5, z: -1.5}
                         var coordUp = {x: (-0.35 * 3.5) + (i * 0.35), y: 2.5, z: -1.5}
-                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i });
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i, soundEffect: "laugth" });
                         kn.setAttribute("wobble-rotation", "delay: " + (200*i));
                         kn.setAttribute("animation__updown", "property: position; easing: easeInOutSine; dir: alternate; loop: true; dur: 2400; delay: " + (i * 300) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: " + AFRAME.utils.coordinates.stringify(coordUp));
                     }
@@ -185,7 +207,7 @@ AFRAME.registerComponent("game-manager", {
                     for (var i=0; i<12; i+=1) {
                         // console.log("create kube");
                         var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
-                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i, parent: carousel });
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i, parent: carousel, soundEffect: "laugth" });
                         kn.setAttribute("wobble-rotation", "delay: " + (200*i) + "; duration: 1200;");
                     }
                     break;
@@ -196,21 +218,27 @@ AFRAME.registerComponent("game-manager", {
                         for (var i=0; i<8; i += 1) {
                             var count = (8*j)+i;
                             var coord = {x: (-0.35 * 3.5) + (i * 0.35), y: 2.6 - (j * 0.35), z: -1.5}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+j) });
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+j), soundEffect: "laugth" });
                             kn.setAttribute("wobble-rotation", "delay: "+200*(i+j));
                         }
                     }
                     break;
-
+                
                 case 9:
-                    var rndm = getRandomInt(0, 15);
+                    this.kube9 = this.spawnKube(this.kube9Positions[this.kube9PositionsIndex], true, { soundEffect: "laugth" });
+                    this.kube9.setAttribute("wobble-rotation", "");
+                    this.kube9Timer = 0;
+                    break;
+
+                case 10:
+                    var rndm = getRandomInt(7, 15);
                     var delays = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
                     for (var j=0; j<4; j+=1) {
                         for (var i=0; i<4; i += 1) {
                             var count = (4*j)+i;
                             var coord = {x: 3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35)}
                             var coordend = {x: -3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35)}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+(j*4)) });
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), delays[count] === rndm, { delay: 200*(i+(j*4)), soundEffect: "laugth" });
                             kn.setAttribute("wobble-rotation", "delay: "+200*(i+j*4));
                             kn.setAttribute("animation__scrolling", "property: position; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: "+ AFRAME.utils.coordinates.stringify(coordend) + ";");
                         }
@@ -250,7 +278,7 @@ AFRAME.registerComponent("grow-viral-selection", {
             this.el.removeAttribute("sound__deflate");
             this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
             this.el.removeAttribute("animation__deflate");
-            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 5000; easing: easeInQuad; to: 3, 3, 3;");
+            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 6530; easing: easeInQuad; to: 3, 3, 3;");
         };
         this.el.addEventListener("mouseenter", this.event_gv);
 
@@ -291,7 +319,11 @@ AFRAME.registerComponent("color-highlight", {
 });
 
 AFRAME.registerComponent("valid-selection", {
-    schema: { },
+    schema: {
+        soundEffect: {
+            type: "string", default: "valid"
+        }
+    },
     init: function () {
         this.event_me = (event) => {
             this.el.removeAttribute("animation__appear_scale");
@@ -311,7 +343,7 @@ AFRAME.registerComponent("valid-selection", {
         this.el.addEventListener("mouseleave", this.event_ml);
         
         this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
-            this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
+            this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
             document.querySelector('#gameManager').emit("nextlevel");
             this.el.removeEventListener("mouseenter", this.event_me);
             this.el.removeEventListener("mouseleave", this.event_ml);
