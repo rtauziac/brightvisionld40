@@ -83,7 +83,7 @@ AFRAME.registerComponent("game-manager", {
     remove: function () { },
     pause: function () { },
     play: function () {
-        //this.el.setAttribute("sound__static", "src: url(sounds/static.mp3); autoplay: true; loop: false;");
+        //this.el.setAttribute("sound__static", "src: url(brightvisionld40/sounds/static.mp3); autoplay: true; loop: false;");
     },
     spawnKube: function (position, interactable = false, data) {
         let newKube = document.createElement('a-box');
@@ -275,8 +275,8 @@ AFRAME.registerComponent("game-manager", {
             this.nextLevel();
         }, 2000);
         this.el.removeAttribute("sound__static");
-        this.el.setAttribute("sound__rime", "src: url(sounds/rimes.mp3); autoplay: true; loop: true;");
-        this.el.setAttribute("sound__noise", "src: url(sounds/beatnoise.mp3); autoplay: true; loop: true;");
+        this.el.setAttribute("sound__rime", "src: url(brightvisionld40/sounds/rimes.mp3); autoplay: true; loop: true;");
+        this.el.setAttribute("sound__noise", "src: url(brightvisionld40/sounds/beatnoise.mp3); autoplay: true; loop: true;");
     },
     sceneUnboxed: function() {
         this.el.querySelector("#room_decimate_entity").setAttribute("visible", "false");
@@ -290,7 +290,7 @@ AFRAME.registerComponent("game-manager", {
 
         this.el.removeAttribute("sound__rime");
         this.el.removeAttribute("sound__noise");
-        this.el.setAttribute("sound__freedom", "src: url(sounds/freedom.mp3); autoplay: true; loop: false;");
+        this.el.setAttribute("sound__freedom", "src: url(brightvisionld40/sounds/freedom.mp3); autoplay: true; loop: false;");
 
         setTimeout(() => {
             this.el.querySelector("#thxText").setAttribute("visible", true);
@@ -303,7 +303,7 @@ AFRAME.registerComponent("grow-viral-selection", {
     init: function () {
         this.event_gv = (event) => {
             this.el.removeAttribute("sound__deflate");
-            this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
+            this.el.setAttribute("sound__rise", "src: url(brightvisionld40/sounds/Rise.mp3); autoplay: true; loop: false;");
             this.el.removeAttribute("animation__deflate");
             this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 6530; easing: easeInQuad; to: 3.5, 3.5, 3.5;");
         };
@@ -314,13 +314,13 @@ AFRAME.registerComponent("grow-viral-selection", {
             this.el.removeAttribute("sound__rise");
             this.el.setAttribute("animation__deflate", "property: scale; dir: normal; dur: 700; easing: easeOutExpo; to: 1, 1, 1;");
             if (this.el.components.scale.data.x > 1.2) {
-                this.el.setAttribute("sound__deflate", "src: url(sounds/deflate.mp3); autoplay: true; loop: false;");
+                this.el.setAttribute("sound__deflate", "src: url(brightvisionld40/sounds/deflate.mp3); autoplay: true; loop: false;");
             }
         };
         this.el.addEventListener("mouseleave", this.event_le);
 
         this.el.addEventListener("animation__grow_viral-complete", (event) => {
-            // this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
+            // this.el.setAttribute("sound", "src: url(brightvisionld40/sounds/valid.mp3); autoplay: true;");
             document.querySelector('#gameManager').emit("nextpart");
             this.el.removeEventListener("mouseenter", this.event_gv);
             this.el.removeEventListener("mouseleave", this.event_le);
@@ -370,7 +370,7 @@ AFRAME.registerComponent("valid-selection", {
         this.el.addEventListener("mouseleave", this.event_ml);
         
         this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
-            this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
+            this.el.setAttribute("sound", "src: url(brightvisionld40/sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
             document.querySelector('#gameManager').emit("nextlevel");
             this.el.removeEventListener("mouseenter", this.event_me);
             this.el.removeEventListener("mouseleave", this.event_ml);
@@ -429,7 +429,7 @@ AFRAME.registerComponent("wobble-rotation", {
 //                 // console.log(event);
 //                 // console.log(current);
 //                 this.el.removeAttribute("sound__deflate");
-//                 this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
+//                 this.el.setAttribute("sound__rise", "src: url(brightvisionld40/sounds/Rise.mp3); autoplay: true; loop: false;");
 //                 this.el.removeAttribute("animation__gaze_leave");
 //                 this.el.setAttribute("animation__gaze_enter", "property: scale; dir: normal; dur: 5000; easing: easeInQuad; to: 2, 2, 2;");
 //             });
@@ -437,7 +437,7 @@ AFRAME.registerComponent("wobble-rotation", {
 //                 // console.log("out");
 //                 this.el.removeAttribute("animation__gaze_enter");
 //                 this.el.removeAttribute("sound__rise");
-//                 this.el.setAttribute("sound__deflate", "src: url(sounds/deflate.mp3); autoplay: true; loop: false;");
+//                 this.el.setAttribute("sound__deflate", "src: url(brightvisionld40/sounds/deflate.mp3); autoplay: true; loop: false;");
 //                 this.el.setAttribute("animation__gaze_leave", "property: scale; dir: normal; dur: 700; easing: easeOutExpo; to: 1, 1, 1;");
 //             });
 //             this.el.addEventListener("animation__gaze_enter-complete", (event) => {
@@ -456,9 +456,9 @@ AFRAME.registerComponent("start-title-manager", {
     schema: {},
     init: function () {
         let gameManager = document.querySelector('#gameManager');
-        gameManager.setAttribute("sound__static", "src: url(sounds/static2.mp3); autoplay: true; loop: true;");
+        gameManager.setAttribute("sound__static", "src: url(brightvisionld40/sounds/static2.mp3); autoplay: true; loop: true;");
         this.el.addEventListener("click", (event) => {
-            gameManager.setAttribute("sound__start", "src: url(sounds/arpegio.mp3); autoplay: true; loop: false;");
+            gameManager.setAttribute("sound__start", "src: url(brightvisionld40/sounds/arpegio.mp3); autoplay: true; loop: false;");
             this.el.parentNode.removeChild(this.el);
             gameManager.querySelector("#instructionText").setAttribute("visible", false);
             gameManager.emit("nextlevel");
@@ -481,7 +481,7 @@ AFRAME.registerComponent("start-title-manager", {
 //             color: "black"
 //         },
 //         sound__appear: {
-//             src: "url(sounds/appear01.mp3)",
+//             src: "url(brightvisionld40/sounds/appear01.mp3)",
 //             autoplay: true,
 //             loop: false
 //         },
@@ -523,7 +523,7 @@ AFRAME.registerPrimitive("a-start-title", {
             color: "white"
         },
         sound__appear: {
-            src: "url(sounds/appear01.mp3)",
+            src: "url(brightvisionld40/sounds/appear01.mp3)",
             autoplay: true,
             loop: false
         },
