@@ -1,7 +1,7 @@
 # Blender MTL File: 'Blank scene.blend'
 # Material Count: 1
 
-newmtl Socle_Albedo_Mat
+newmtl Room_Albedo_Mat
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 1.000000 1.000000 1.000000
@@ -10,4 +10,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 0
-map_Kd Socle Albedo.png
+map_Kd Room Albedo.png

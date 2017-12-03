@@ -29,10 +29,6 @@ AFRAME.registerComponent("game-manager", {
             this.el.appendChild(startTitle);
         }, 2000);
 
-        this.el.addEventListener("startgame", () => {
-            this.nextLevel();
-        });
-
         this.el.addEventListener("nextlevel", () => {
             this.nextLevel();
         });
@@ -58,6 +54,7 @@ AFRAME.registerComponent("game-manager", {
         }
         newKube.setAttribute("appear-scale", animProps.join(";"));
         if (interactable === true) {
+            // newKube.setAttribute("material", "color: #888");
             if (data != undefined && data.selection != undefined) {
                 newKube.setAttribute(data.selection, "");
             }
@@ -74,6 +71,7 @@ AFRAME.registerComponent("game-manager", {
         // let kubeSound = document.createElement('a-sound');
         // kubeSound.setAttribute("src", "#appear_sound");
         // newKube.appendChild(kubeSound);
+        this.allKubes.push(kubeParent);
         return kubeParent;
     },
     // startGame: function() {
@@ -89,7 +87,8 @@ AFRAME.registerComponent("game-manager", {
 
     // },
     nextLevel: function () {
-        this.data.level += 1;
+
+        console.log("Next level");
         // remove all kubes
         this.allKubes.forEach(element => {
             element.setAttribute("animation__remove", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 1000; easing: easeOutExpo;")
@@ -101,26 +100,22 @@ AFRAME.registerComponent("game-manager", {
         });
 
         // prepare next level
-        setTimeout(() => {
+        //setTimeout(() => {
+            this.data.level += 1;
+            console.log("creating level "+this.data.level);
             switch (this.data.level) { // create the levels
                 case 1:
-                    var k1 = this.spawnKube("0 1.5 -1.5", true);
+                    var k1 = this.spawnKube("0 1.5 -1.5", true, { delay: 2000 });
                     k1.setAttribute("wobble-rotation", "");
-                    this.allKubes.push(k1);
                     break;
 
                 case 2:
-                    var k1 = this.spawnKube("-1 1.5 -1.5", false);
-                    k1.setAttribute("wobble-rotation", "");
-                    this.allKubes.push(k1);
-
-                    var k2 = this.spawnKube("0 1.5 -1.5", false, { delay: 300 });
-                    k2.setAttribute("wobble-rotation", "delay: 300");
-                    this.allKubes.push(k2);
-
-                    var k3 = this.spawnKube("1 1.5 -1.5", true, { delay: 600 });
-                    k3.setAttribute("wobble-rotation", "delay: 600");
-                    this.allKubes.push(k3);
+                    var k1 = this.spawnKube("-1 1.5 -1.5", false, { delay: 2000 });
+                    k1.setAttribute("wobble-rotation", "delay: 2000");
+                    var k2 = this.spawnKube("0 1.5 -1.5", false, { delay: 2300 });
+                    k2.setAttribute("wobble-rotation", "delay: 2300");
+                    var k3 = this.spawnKube("1 1.5 -1.5", true, { delay: 2600 });
+                    k3.setAttribute("wobble-rotation", "delay: 2600");
                     break;
                 
                 case 3:
@@ -128,22 +123,34 @@ AFRAME.registerComponent("game-manager", {
                     for (var j=0; j<2; j+=1) {
                         for (var i=0; i<4; i+=1) {
                             var count = (i + (4*j));
-                            console.log(count);
                             var coord = {x: 0.25 + ((i-2) * 0.5), y: 1.5 + (j * 0.5), z: -1.5}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: (200*count)});
-                            kn.setAttribute("wobble-rotation", "delay: " + (200*count));
-                            this.allKubes.push(kn);
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 2000 + (200*count)});
+                            kn.setAttribute("wobble-rotation", "delay: " + (2000 + (200*count)));
                         }
                     }
                     break;
 
                 case 4:
+                    
+                    var rndm = getRandomInt(0, 11);
                     for (var i=0; i<12; i+=1) {
-
+                        console.log("create kube");
+                        var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 2000 + (200*i) });
+                        kn.setAttribute("wobble-rotation", "delay: " + (2000 + (200*i)) + "; duration: 1200;");
                     }
                     break;
+
+                case 5:
+                    var k1 = this.spawnKube("-1 1.5 -1.5", false, { delay: 2000});
+                    k1.setAttribute("wobble-rotation", "delay: 2000");
+                    var k2 = this.spawnKube("0 1.5 -1.5", true, { delay: 2300, selection: "grow-viral-selection" });
+                    k2.setAttribute("wobble-rotation", "delay: 2300");
+                    var k3 = this.spawnKube("1 1.5 -1.5", false, { delay: 2600 });
+                    k3.setAttribute("wobble-rotation", "delay: 2600");
+                    break;
             }
-        }, 2000);
+        //}, 2000);
     }
 });
 
@@ -154,7 +161,7 @@ AFRAME.registerComponent("grow-viral-selection", {
             this.el.removeAttribute("sound__deflate");
             this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
             this.el.removeAttribute("animation__deflate");
-            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 5000; easing: easeInQuad; to: 2, 2, 2;");
+            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 5000; easing: easeInQuad; to: 3, 3, 3;");
         });
 
         this.el.addEventListener("mouseleave", (event) => {
@@ -188,19 +195,25 @@ AFRAME.registerComponent("color-highlight", {
 AFRAME.registerComponent("valid-selection", {
     schema: { },
     init: function () {
-        this.el.addEventListener("mouseenter", (event) => {
+        var event_me;
+        var event_ml;
+
+        this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
+            this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
+            document.querySelector('#gameManager').emit("nextlevel");
+            this.el.removeEventListener("mouseenter", event_me);
+            this.el.removeEventListener("mouseleave", event_ml);
+        });
+        
+        event_me = this.el.addEventListener("mouseenter", (event) => {
             this.el.removeAttribute("animation__appear_scale");
             this.el.removeAttribute("animation__deflate_valid_scale");
             // this.el.removeAttribute("animation__deflate_valid_color");
             this.el.setAttribute("animation__grow_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1.3, 1.3, 1.3;");
             // this.el.setAttribute("animation__grow_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
-            this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
-                this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
-                document.querySelector('#gameManager').emit("nextlevel");
-            });
         });
 
-        this.el.addEventListener("mouseleave", (event) => {
+        event_ml = this.el.addEventListener("mouseleave", (event) => {
             this.el.removeAttribute("animation__grow_valid_scale");
             // this.el.removeAttribute("animation__grow_valid_color");
             this.el.setAttribute("animation__deflate_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1, 1, 1;");
@@ -216,7 +229,7 @@ AFRAME.registerComponent("appear-scale", {
         }
     },
     init: function () {
-        console.log("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
+        // console.log("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
         this.el.setAttribute("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
     }
 });
@@ -225,10 +238,13 @@ AFRAME.registerComponent("wobble-rotation", {
     schema: {
         delay: {
             type: "int", default: 0
+        },
+        duration: {
+            type: "number", default: 1300
         }
     },
     init: function () {
-        this.el.setAttribute("animation__wiggle", "property: rotation; easing: easeInOutSine; from: -5 -5 -5; to: 5 5 5; dir: alternate; delay: " + this.data.delay + "; dur: 1300; loop: true;");
+        this.el.setAttribute("animation__wiggle", "property: rotation; easing: easeInOutSine; from: -5 -5 -5; to: 5 5 5; dir: alternate; delay: " + this.data.delay + "; dur: " + this.data.duration + "; loop: true;");
         // this.el.setAttribute("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
     }
 });
@@ -285,10 +301,11 @@ AFRAME.registerComponent("start-title-manager", {
     schema: {},
     init: function () {
         this.el.addEventListener("click", (event) => {
-            this.el.setAttribute("sound", "src: url(sounds/arpegio.mp3); autoplay: true; loop: false;");
+            let gameManager = document.querySelector('#gameManager');
+            gameManager.setAttribute("sound", "src: url(sounds/arpegio.mp3); autoplay: true; loop: false;");
             this.el.parentNode.removeChild(this.el);
             // console.log(document.querySelector('#gameManager'));
-            document.querySelector('#gameManager').emit("startgame");
+            gameManager.emit("nextlevel");
         });
     }
 });

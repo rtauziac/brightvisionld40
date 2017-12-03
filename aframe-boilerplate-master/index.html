@@ -13,10 +13,8 @@
 <body>
   <a-scene crazyrems stats>
     <a-assets>
-      <a-asset-item id="blank_room" src="/models/blank_room.obj"></a-asset-item>
-      <a-asset-item id="blank_room_mtl" src="/models/blank_room.mtl"></a-asset-item>
-      <a-asset-item id="socle" src="/models/socle.obj"></a-asset-item>
-      <a-asset-item id="socle_mtl" src="/models/socle.mtl"></a-asset-item>
+      <a-asset-item id="room" src="/models/test_room.obj"></a-asset-item>
+      <a-asset-item id="room_mtl" src="/models/test_room.mtl"></a-asset-item>
       <audio id="appear_sound" src="/sounds/appear01.mp3" preload="auto"></audio>
       <audio id="static_sound" src="/sounds/static.mp3" preload="auto"></audio>
 
@@ -27,19 +25,17 @@
     <!-- Camera -->
     <a-entity id="gameManager" game-manager sound="src: url(sounds/static.mp3); autoplay: true; loop: true">
       <a-entity camera="userHeight: 1.6" far="50" look-controls wasd-controls>
-          <a-entity cursor="fuse: true; fuseTimeout: 1200"
-                    position="0 0 -1.2"
+          <a-entity cursor="fuse: true; fuseTimeout: 1200"></a-entity>
+          <a-entity position="0 0 -1.2"
                     geometry="primitive: ring; radiusInner: 0.012; radiusOuter: 0.018"
-                    material="color: black; shader: flat">
-          </a-entity>
+                    material="color: black; shader: flat"></a-entity>
       </a-entity>
 
       <!-- Light -->
       <a-light type="ambient" color="white"></a-light>
 
       <!-- Static room -->
-      <a-entity position="0 0 0" obj-model="obj: #blank_room; mtl: #blank_room_mtl"></a-entity>
-      <a-entity position="0 0 0" obj-model="obj: #socle; mtl: #socle_mtl"></a-entity>
+      <a-entity position="0 0 0" obj-model="obj: #room; mtl: #room_mtl"></a-entity>
 
       <!-- All the other objects -->
       <!-- <a-kube position="0 1.1 -1.5" cursor-listener kube-manager></a-kube> -->

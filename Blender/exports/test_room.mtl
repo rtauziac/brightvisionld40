@@ -4,10 +4,10 @@
 newmtl Room_Albedo_Mat
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
-Kd 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
-illum 1
-map_Kd Room Albedo.png
+illum 0
+map_Kd G:\rtauziac\Documents\Ludum Dare\40\aframe-boilerplate\Blender\Room Albedo.png
