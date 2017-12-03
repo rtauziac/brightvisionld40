@@ -15,12 +15,14 @@
     <a-assets>
       <a-asset-item id="room" src="/models/test_room.obj"></a-asset-item>
       <a-asset-item id="room_mtl" src="/models/test_room.mtl"></a-asset-item>
+      <a-asset-item id="room_decimate" src="/models/test_room_decimate.obj"></a-asset-item>
+      <a-asset-item id="room_decimate_mtl" src="/models/test_room_decimate.mtl"></a-asset-item>
       <a-mixin id="black" material="color: black"></a-mixin>
       <a-mixin id="cube" geometry="primitive: box" scale="1 1 1"></a-mixin>
     </a-assets>
 
     <!-- Camera -->
-    <a-entity id="gameManager" game-manager sound="src: url(/sounds/static.mp3); loop: true;">
+    <a-entity id="gameManager" game-manager>
       <a-entity camera="userHeight: 1.6" far="50" look-controls wasd-controls>
           <a-entity cursor="fuse: true; fuseTimeout: 1200"></a-entity>
           <a-entity position="0 0 -1.2"
@@ -32,7 +34,8 @@
       <a-light type="ambient" color="white"></a-light>
 
       <!-- Static room -->
-      <a-entity position="0 0 0" obj-model="obj: #room; mtl: #room_mtl"></a-entity>
+      <a-entity id=room_entity visible="true" position="0 0 0" obj-model="obj: #room; mtl: #room_mtl"></a-entity> -->
+      <a-entity id=room_decimate_entity visible="false" position="0 0 0" obj-model="obj: #room_decimate; mtl: #room_decimate_mtl"></a-entity>
 
       <!-- All the other objects -->
       <!-- <a-kube position="0 1.1 -1.5" cursor-listener kube-manager></a-kube> -->

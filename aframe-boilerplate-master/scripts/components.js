@@ -18,7 +18,7 @@ AFRAME.registerComponent("crazyrems", {
 AFRAME.registerComponent("game-manager", {
     schema: {
         level: {
-            type: "int", default: 0
+            type: "int", default: 4
         }
     },
     init: function () {
@@ -31,6 +31,10 @@ AFRAME.registerComponent("game-manager", {
 
         this.el.addEventListener("nextlevel", () => {
             this.nextLevel();
+        });
+
+        this.el.addEventListener("part2", () => {
+            this.sceneDecimate();
         });
     },
     update: function () { },
@@ -69,35 +73,18 @@ AFRAME.registerComponent("game-manager", {
 
         kubeParent.appendChild(newKube);
         this.el.appendChild(kubeParent);
-        // newKube.setAttribute("interactable", interactable);
-        // let kubeSound = document.createElement('a-sound');
-        // kubeSound.setAttribute("src", "#appear_sound");
-        // newKube.appendChild(kubeSound);
         this.allKubes.push(kubeParent);
         return kubeParent;
     },
-    // startGame: function() {
-    //     setTimeout( ()=>{
-    //         // let newKube = document.createElement('a-kube');
-    //         // newKube.setAttribute("position", "0 1.5 -1.5");
-    //         // newKube.setAttribute("scale", "0.0001 0.0001 0.0001");
-    //         // this.el.appendChild(newKube);
-    //         this.allKubes.push(this.spawnKube("0 1.5 -1.5", true));
-    //         this.allKubes.push(this.spawnKube("-1 1.5 -1.5"));
-    //         this.allKubes.push(this.spawnKube("1 1.5 -1.5"));
-    //     }, 2000);
-
-    // },
     nextLevel: function () {
-
-        console.log("Next level");
+        // console.log("Next level");
         // remove all kubes
         console.log("remove "+ this.allKubes.length +" kubes");
         this.allKubes.forEach(element => {
             element.setAttribute("animation__remove", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 1000; easing: easeOutExpo;")
             setTimeout(() => {
                 if (element.parentNode != undefined || element.parentNode != null) {
-                    console.log("removing kube");
+                    // console.log("removing kube");
                     element.parentNode.removeChild(element);
                 }
             }, 5000);
@@ -106,7 +93,7 @@ AFRAME.registerComponent("game-manager", {
         // prepare next level
         setTimeout(() => {
             this.data.level += 1;
-            console.log("creating level "+this.data.level);
+            // console.log("creating level "+this.data.level);
             switch (this.data.level) { // create the levels
                 case 1:
                     var k1 = this.spawnKube("0 1.5 -1.5", true);
@@ -155,26 +142,50 @@ AFRAME.registerComponent("game-manager", {
                     break;
             }
         }, 2000);
+    },
+    sceneDecimate: function() {
+        this.el.querySelector("#room_entity").setAttribute("visible", "false");
+        this.el.querySelector("#room_decimate_entity").setAttribute("visible", "true");
+
+        this.allKubes.forEach(element => {
+            element.setAttribute("animation__decimate_scale", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 2500; easing: easeInExpo;")
+            element.setAttribute("animation__decimate_rotation", "property: rotation; to: -400 -400 -400; dir: normal; dur: 2500; easing: easeInExpo;")
+            setTimeout(() => {
+                if (element.parentNode != undefined || element.parentNode != null) {
+                    // console.log("removing kube");
+                    element.parentNode.removeChild(element);
+                }
+            }, 5000);
+        });
     }
 });
 
 // All kinds of kubes
 AFRAME.registerComponent("grow-viral-selection", {
     init: function () {
-        this.el.addEventListener("mouseenter", (event) => {
+        var event_gv;
+        var event_le;
+        listener_gv = this.el.addEventListener("mouseenter", (event) => {
             this.el.removeAttribute("sound__deflate");
             this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
             this.el.removeAttribute("animation__deflate");
             this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 5000; easing: easeInQuad; to: 3, 3, 3;");
         });
 
-        this.el.addEventListener("mouseleave", (event) => {
+        listener_le = this.el.addEventListener("mouseleave", (event) => {
             this.el.removeAttribute("animation__grow_viral");
             this.el.removeAttribute("sound__rise");
             this.el.setAttribute("animation__deflate", "property: scale; dir: normal; dur: 700; easing: easeOutExpo; to: 1, 1, 1;");
             if (this.el.components.scale.data.x > 1.2) {
                 this.el.setAttribute("sound__deflate", "src: url(sounds/deflate.mp3); autoplay: true; loop: false;");
             }
+        });
+
+        this.el.addEventListener("animation__grow_viral-complete", (event) => {
+            // this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
+            document.querySelector('#gameManager').emit("part2");
+            this.el.removeEventListener("mouseenter", event_gv);
+            this.el.removeEventListener("mouseleave", event_le);
         });
     }
 });
@@ -201,14 +212,7 @@ AFRAME.registerComponent("valid-selection", {
     init: function () {
         var event_me;
         var event_ml;
-
-        this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
-            this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
-            document.querySelector('#gameManager').emit("nextlevel");
-            this.el.removeEventListener("mouseenter", event_me);
-            this.el.removeEventListener("mouseleave", event_ml);
-        });
-
+        
         event_me = this.el.addEventListener("mouseenter", (event) => {
             this.el.removeAttribute("animation__appear_scale");
             this.el.removeAttribute("animation__deflate_valid_scale");
@@ -216,12 +220,19 @@ AFRAME.registerComponent("valid-selection", {
             this.el.setAttribute("animation__grow_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1.3, 1.3, 1.3;");
             // this.el.setAttribute("animation__grow_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
         });
-
+        
         event_ml = this.el.addEventListener("mouseleave", (event) => {
             this.el.removeAttribute("animation__grow_valid_scale");
             // this.el.removeAttribute("animation__grow_valid_color");
             this.el.setAttribute("animation__deflate_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1, 1, 1;");
             // this.el.setAttribute("animation__deflate_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
+        });
+        
+        this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
+            this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
+            document.querySelector('#gameManager').emit("nextlevel");
+            this.el.removeEventListener("mouseenter", event_me);
+            this.el.removeEventListener("mouseleave", event_ml);
         });
     }
 });
