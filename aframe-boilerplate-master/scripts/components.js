@@ -37,7 +37,7 @@ AFRAME.registerComponent("crazyrems", {
 AFRAME.registerComponent("game-manager", {
     schema: {
         level: {
-            type: "int", default: 8
+            type: "int", default: 0
         }
     },
     init: function () {
@@ -60,8 +60,13 @@ AFRAME.registerComponent("game-manager", {
             this.nextLevel();
         });
 
-        this.el.addEventListener("part2", () => {
-            this.sceneDecimate();
+        this.el.addEventListener("nextpart", () => {
+            if (this.el.querySelector("#room_entity").getAttribute("visible") == true) {
+                this.sceneDecimate();
+            }
+            else {
+                this.sceneUnboxed();
+            }
         });
     },
     update: function () { },
@@ -96,7 +101,7 @@ AFRAME.registerComponent("game-manager", {
         }
         newKube.setAttribute("appear-scale", animProps.join(";"));
         if (interactable === true) {
-            newKube.setAttribute("material", "color: #888");
+            // newKube.setAttribute("material", "color: #888");
             if (data != undefined && data.selection != undefined) {
                 newKube.setAttribute(data.selection, "");
             }
@@ -183,7 +188,6 @@ AFRAME.registerComponent("game-manager", {
                     break;
 
                 case 5:
-
                     var k1 = this.spawnKube("0 1.5 -1.5", true, { selection: "grow-viral-selection" });
                     k1.setAttribute("wobble-rotation", "");
                     break;
@@ -213,11 +217,11 @@ AFRAME.registerComponent("game-manager", {
                     break;
                 
                 case 8:
-                    var rndm = getRandomInt(0, 39);
+                    var rndm = getRandomInt(0, 29);
                     for (var j=0; j<5; j+=1) {
-                        for (var i=0; i<8; i += 1) {
-                            var count = (8*j)+i;
-                            var coord = {x: (-0.35 * 3.5) + (i * 0.35), y: 2.6 - (j * 0.35), z: -1.5}
+                        for (var i=0; i<6; i += 1) {
+                            var count = (6*j)+i;
+                            var coord = {x: (-0.35 * 2.5) + (i * 0.35), y: 2.6 - (j * 0.35), z: -1.5}
                             var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+j), soundEffect: "laugth" });
                             kn.setAttribute("wobble-rotation", "delay: "+200*(i+j));
                         }
@@ -231,7 +235,7 @@ AFRAME.registerComponent("game-manager", {
                     break;
 
                 case 10:
-                    var rndm = getRandomInt(7, 15);
+                    var rndm = getRandomInt(5, 15);
                     var delays = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
                     for (var j=0; j<4; j+=1) {
                         for (var i=0; i<4; i += 1) {
@@ -243,6 +247,11 @@ AFRAME.registerComponent("game-manager", {
                             kn.setAttribute("animation__scrolling", "property: position; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: "+ AFRAME.utils.coordinates.stringify(coordend) + ";");
                         }
                     }
+                    break;
+                
+                case 11:
+                    var k1 = this.spawnKube("0 1.5 -1.5", true, { selection: "grow-viral-selection" });
+                    k1.setAttribute("wobble-rotation", "");
                     break;
             }
         }, 2000);
@@ -268,6 +277,24 @@ AFRAME.registerComponent("game-manager", {
         this.el.removeAttribute("sound__static");
         this.el.setAttribute("sound__rime", "src: url(sounds/rimes.mp3); autoplay: true; loop: true;");
         this.el.setAttribute("sound__noise", "src: url(sounds/beatnoise.mp3); autoplay: true; loop: true;");
+    },
+    sceneUnboxed: function() {
+        this.el.querySelector("#room_decimate_entity").setAttribute("visible", "false");
+        this.el.querySelector("#room_unboxed_entity").setAttribute("visible", "true");
+
+        this.allKubes.forEach(element => {
+            element.removeAttribute("animation__wiggle");
+            element.removeAttribute("animation__decimate_rotation");
+            element.setAttribute("animation__unboxed_rotation", "property: rotation; to: 0 0 0; dir: normal; dur: 1000; easing: easeOutExpo;")
+        });
+
+        this.el.removeAttribute("sound__rime");
+        this.el.removeAttribute("sound__noise");
+        this.el.setAttribute("sound__freedom", "src: url(sounds/freedom.mp3); autoplay: true; loop: false;");
+
+        setTimeout(() => {
+            this.el.querySelector("#thxText").setAttribute("visible", true);
+        }, 13680);
     }
 });
 
@@ -278,7 +305,7 @@ AFRAME.registerComponent("grow-viral-selection", {
             this.el.removeAttribute("sound__deflate");
             this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
             this.el.removeAttribute("animation__deflate");
-            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 6530; easing: easeInQuad; to: 3, 3, 3;");
+            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 6530; easing: easeInQuad; to: 3.5, 3.5, 3.5;");
         };
         this.el.addEventListener("mouseenter", this.event_gv);
 
@@ -294,7 +321,7 @@ AFRAME.registerComponent("grow-viral-selection", {
 
         this.el.addEventListener("animation__grow_viral-complete", (event) => {
             // this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
-            document.querySelector('#gameManager').emit("part2");
+            document.querySelector('#gameManager').emit("nextpart");
             this.el.removeEventListener("mouseenter", this.event_gv);
             this.el.removeEventListener("mouseleave", this.event_le);
         });
@@ -433,6 +460,7 @@ AFRAME.registerComponent("start-title-manager", {
         this.el.addEventListener("click", (event) => {
             gameManager.setAttribute("sound__start", "src: url(sounds/arpegio.mp3); autoplay: true; loop: false;");
             this.el.parentNode.removeChild(this.el);
+            gameManager.querySelector("#instructionText").setAttribute("visible", false);
             gameManager.emit("nextlevel");
         });
     },

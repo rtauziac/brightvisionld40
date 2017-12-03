@@ -17,6 +17,8 @@
       <a-asset-item id="room_mtl" src="/models/test_room.mtl"></a-asset-item>
       <a-asset-item id="room_decimate" src="/models/test_room_decimate.obj"></a-asset-item>
       <a-asset-item id="room_decimate_mtl" src="/models/test_room_decimate.mtl"></a-asset-item>
+      <a-asset-item id="room_unboxed" src="/models/test_room_unboxed.obj"></a-asset-item>
+      <a-asset-item id="room_unboxed_mtl" src="/models/test_room_unboxed.mtl"></a-asset-item>
       <a-mixin id="black" material="color: black"></a-mixin>
       <a-mixin id="cube" geometry="primitive: box" scale="1 1 1"></a-mixin>
     </a-assets>
@@ -33,9 +35,14 @@
       <!-- Light -->
       <a-light type="ambient" color="white"></a-light>
 
+      <!-- Text -->
+      <a-entity id="instructionText" visible="true" position="0 1.529 -1.107" text__instruction="color:#000000;value:VR headset and headphones are\nhighly recommanded\n\nLook at START to begin;font:monoid;width:2;height:1;align:center"></a-entity>
+      <a-entity id="thxText" visible="false" position="0 1.529 -1.107" text__thxtext="value:THANKS\nFOR\nPLAYING;font:monoid;width:3.08;height:1;align:center"></a-entity>
+
       <!-- Static room -->
-      <a-entity id=room_entity visible="true" position="0 0 0" obj-model="obj: #room; mtl: #room_mtl"></a-entity> -->
+      <a-entity id=room_entity visible="true" position="0 0 0" obj-model="obj: #room; mtl: #room_mtl"></a-entity>
       <a-entity id=room_decimate_entity visible="false" position="0 0 0" obj-model="obj: #room_decimate; mtl: #room_decimate_mtl"></a-entity>
+      <a-entity id=room_unboxed_entity visible="false" position="0 0 0" obj-model="obj: #room_unboxed; mtl: #room_unboxed_mtl"></a-entity>
 
       <!-- All the other objects -->
       <!-- <a-kube position="0 1.1 -1.5" cursor-listener kube-manager></a-kube> -->
