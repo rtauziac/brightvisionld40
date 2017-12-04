@@ -23,6 +23,17 @@
       <a-mixin id="cube" geometry="primitive: box" scale="1 1 1"></a-mixin>
     </a-assets>
 
+    <!-- preload sounds -->
+    <a-sound src="url(sounds/static2.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/arpegio.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/valid.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/Rise.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/deflate.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/laugth.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/rimes.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/beatnoise.mp3); autoplay: false;"></a-sound>
+    <a-sound src="url(sounds/freedom.mp3); autoplay: false;"></a-sound>
+
     <!-- Camera -->
     <a-entity id="gameManager" game-manager>
       <a-entity camera="userHeight: 1.6" far="50" look-controls wasd-controls>
@@ -36,7 +47,7 @@
       <a-light type="ambient" color="white"></a-light>
 
       <!-- skybox -->
-      <a-entity scale="-15 15 15" geometry=""></a-entity>
+      <a-entity scale="-15 15 15" geometry="primitive: box" material="color: white"></a-entity>
 
       <!-- Text -->
       <a-entity id="instructionText" visible="true" position="0 1.529 -1.107" text__instruction="color:#000000;value:VR headset and headphones are\nhighly recommanded\n\nLook at START to begin;font:monoid;width:2;height:1;align:center"></a-entity>
