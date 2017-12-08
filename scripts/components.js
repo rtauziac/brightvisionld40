@@ -4,22 +4,37 @@ function getRandomInt(min, max) {
 
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
-  
+
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {
-  
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-  
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
     }
-  
+
     return array;
-  }
+}
+
+function $_GET(param) {
+    var vars = {};
+    window.location.href.replace(location.hash, '').replace(
+        /[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+        function (m, key, value) { // callback
+            vars[key] = value !== undefined ? value : '';
+        }
+    );
+
+    if (param) {
+        return vars[param] ? vars[param] : null;
+    }
+    return vars;
+}
 
 // Components
 AFRAME.registerComponent("crazyrems", {
@@ -68,6 +83,11 @@ AFRAME.registerComponent("game-manager", {
                 this.sceneUnboxed();
             }
         });
+
+        var heightParam = $_GET("playerHeight");
+        if (heightParam != null) {
+            this.el.querySelector("#camera").setAttribute("position", "0 " + heightParam + " 0");
+        }
     },
     update: function () { },
     tick: function (time, timeDelta) {
@@ -95,7 +115,7 @@ AFRAME.registerComponent("game-manager", {
         // newKube.setAttribute("mixin", "black cube");
         var animProps = [];
         if (data != undefined) {
-            if (data.delay!= undefined ) {
+            if (data.delay != undefined) {
                 animProps.push("delay: " + data.delay);
             }
         }
@@ -132,7 +152,7 @@ AFRAME.registerComponent("game-manager", {
     nextLevel: function () {
         // console.log("Next level");
         // remove all kubes
-        console.log("remove "+ this.allKubes.length +" kubes");
+        console.log("remove " + this.allKubes.length + " kubes");
         this.allKubes.forEach(element => {
             element.setAttribute("animation__remove", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 1000; easing: easeOutExpo;")
             setTimeout(() => {
@@ -164,26 +184,26 @@ AFRAME.registerComponent("game-manager", {
                     var k3 = this.spawnKube("1 1.5 -1.5", true, { delay: 600 });
                     k3.setAttribute("wobble-rotation", "delay: 600");
                     break;
-                
+
                 case 3:
                     var rndm = getRandomInt(0, 7);
-                    for (var j=0; j<2; j+=1) {
-                        for (var i=0; i<4; i+=1) {
-                            var count = (i + (4*j));
-                            var coord = {x: 0.25 + ((i-2) * 0.5), y: 1.5 + (j * 0.5), z: -1.5}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*count });
-                            kn.setAttribute("wobble-rotation", "delay: " + (200*count));
+                    for (var j = 0; j < 2; j += 1) {
+                        for (var i = 0; i < 4; i += 1) {
+                            var count = (i + (4 * j));
+                            var coord = { x: 0.25 + ((i - 2) * 0.5), y: 1.5 + (j * 0.5), z: -1.5 }
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200 * count });
+                            kn.setAttribute("wobble-rotation", "delay: " + (200 * count));
                         }
                     }
                     break;
 
                 case 4:
                     var rndm = getRandomInt(0, 11);
-                    for (var i=0; i<12; i+=1) {
+                    for (var i = 0; i < 12; i += 1) {
                         // console.log("create kube");
-                        var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
-                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i });
-                        kn.setAttribute("wobble-rotation", "delay: " + (200*i) + "; duration: 1200;");
+                        var coord = { x: Math.sin((Math.PI * 2 / 12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI * 2 / 12) * i) * 1.5 }
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200 * i });
+                        kn.setAttribute("wobble-rotation", "delay: " + (200 * i) + "; duration: 1200;");
                     }
                     break;
 
@@ -194,12 +214,12 @@ AFRAME.registerComponent("game-manager", {
 
                 case 6:
                     var rndm = getRandomInt(0, 7);
-                    for (var i=0; i<8; i += 1) {
-                        var coord = {x: (-0.35 * 3.5) + (i * 0.35), y: 1.5, z: -1.5}
-                        var coordUp = {x: (-0.35 * 3.5) + (i * 0.35), y: 2.5, z: -1.5}
-                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i, soundEffect: "laugth" });
-                        kn.setAttribute("wobble-rotation", "delay: " + (200*i));
-                        kn.setAttribute("animation__updown", "property: position; easing: easeInOutSine; dir: alternate; loop: true; dur: 2400; delay: " + (i * 300) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: " + AFRAME.utils.coordinates.stringify(coordUp));
+                    for (var i = 0; i < 8; i += 1) {
+                        var coord = { x: (-0.35 * 3.5) + (i * 0.35), y: 1.5, z: -1.5 }
+                        var coordUp = { x: (-0.35 * 3.5) + (i * 0.35), y: 2.5, z: -1.5 }
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200 * i, soundEffect: "laugth" });
+                        kn.setAttribute("wobble-rotation", "delay: " + (200 * i));
+                        kn.setAttribute("animation__updown", "property: position; easing: easeInOutSine; dir: alternate; loop: true; dur: 2400; delay: " + (i * 300) + " from: " + AFRAME.utils.coordinates.stringify(coord) + "; to: " + AFRAME.utils.coordinates.stringify(coordUp));
                     }
                     break;
 
@@ -208,26 +228,26 @@ AFRAME.registerComponent("game-manager", {
                     let carousel = document.createElement('a-entity');
                     carousel.setAttribute("animation__carousel", "property: rotation; dir: normal; dur: 20000; easing: linear; from: 0 0 0; to: 0 360 0; loop: true;");
                     this.el.appendChild(carousel);
-                    for (var i=0; i<12; i+=1) {
+                    for (var i = 0; i < 12; i += 1) {
                         // console.log("create kube");
-                        var coord = {x: Math.sin((Math.PI*2/12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI*2/12) * i) * 1.5}
-                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200*i, parent: carousel, soundEffect: "laugth" });
-                        kn.setAttribute("wobble-rotation", "delay: " + (200*i) + "; duration: 1200;");
+                        var coord = { x: Math.sin((Math.PI * 2 / 12) * i) * 1.5, y: 1.5, z: Math.cos((Math.PI * 2 / 12) * i) * 1.5 }
+                        var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200 * i, parent: carousel, soundEffect: "laugth" });
+                        kn.setAttribute("wobble-rotation", "delay: " + (200 * i) + "; duration: 1200;");
                     }
                     break;
-                
+
                 case 8:
                     var rndm = getRandomInt(0, 29);
-                    for (var j=0; j<5; j+=1) {
-                        for (var i=0; i<6; i += 1) {
-                            var count = (6*j)+i;
-                            var coord = {x: (-0.35 * 2.5) + (i * 0.35), y: 2.6 - (j * 0.35), z: -1.5}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200*(i+j), soundEffect: "laugth" });
-                            kn.setAttribute("wobble-rotation", "delay: "+200*(i+j));
+                    for (var j = 0; j < 5; j += 1) {
+                        for (var i = 0; i < 6; i += 1) {
+                            var count = (6 * j) + i;
+                            var coord = { x: (-0.35 * 2.5) + (i * 0.35), y: 2.6 - (j * 0.35), z: -1.5 }
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), count === rndm, { delay: 200 * (i + j), soundEffect: "laugth" });
+                            kn.setAttribute("wobble-rotation", "delay: " + 200 * (i + j));
                         }
                     }
                     break;
-                
+
                 case 9:
                     this.kube9 = this.spawnKube(this.kube9Positions[this.kube9PositionsIndex], true, { soundEffect: "laugth" });
                     this.kube9.setAttribute("wobble-rotation", "");
@@ -237,18 +257,18 @@ AFRAME.registerComponent("game-manager", {
                 case 10:
                     var rndm = getRandomInt(5, 15);
                     var delays = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
-                    for (var j=0; j<4; j+=1) {
-                        for (var i=0; i<4; i += 1) {
-                            var count = (4*j)+i;
-                            var coord = {x: 3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35)}
-                            var coordend = {x: -3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35)}
-                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), delays[count] === rndm, { delay: 200*(i+(j*4)), soundEffect: "laugth" });
-                            kn.setAttribute("wobble-rotation", "delay: "+200*(i+j*4));
-                            kn.setAttribute("animation__scrolling", "property: position; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: "+ AFRAME.utils.coordinates.stringify(coord) +"; to: "+ AFRAME.utils.coordinates.stringify(coordend) + ";");
+                    for (var j = 0; j < 4; j += 1) {
+                        for (var i = 0; i < 4; i += 1) {
+                            var count = (4 * j) + i;
+                            var coord = { x: 3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35) }
+                            var coordend = { x: -3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35) }
+                            var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), delays[count] === rndm, { delay: 200 * (i + (j * 4)), soundEffect: "laugth" });
+                            kn.setAttribute("wobble-rotation", "delay: " + 200 * (i + j * 4));
+                            kn.setAttribute("animation__scrolling", "property: position; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: " + AFRAME.utils.coordinates.stringify(coord) + "; to: " + AFRAME.utils.coordinates.stringify(coordend) + ";");
                         }
                     }
                     break;
-                
+
                 case 11:
                     var k1 = this.spawnKube("0 1.5 -1.5", true, { selection: "grow-viral-selection" });
                     k1.setAttribute("wobble-rotation", "");
@@ -256,7 +276,7 @@ AFRAME.registerComponent("game-manager", {
             }
         }, 2000);
     },
-    sceneDecimate: function() {
+    sceneDecimate: function () {
         this.el.querySelector("#room_entity").setAttribute("visible", "false");
         this.el.querySelector("#room_decimate_entity").setAttribute("visible", "true");
 
@@ -278,7 +298,7 @@ AFRAME.registerComponent("game-manager", {
         this.el.setAttribute("sound__rime", "src: url(sounds/rimes.mp3); autoplay: true; loop: true;");
         this.el.setAttribute("sound__noise", "src: url(sounds/beatnoise.mp3); autoplay: true; loop: true;");
     },
-    sceneUnboxed: function() {
+    sceneUnboxed: function () {
         this.el.querySelector("#room_decimate_entity").setAttribute("visible", "false");
         this.el.querySelector("#room_unboxed_entity").setAttribute("visible", "true");
 
@@ -360,7 +380,7 @@ AFRAME.registerComponent("valid-selection", {
             // this.el.setAttribute("animation__grow_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
         };
         this.el.addEventListener("mouseenter", this.event_me);
-        
+
         this.event_ml = (event) => {
             this.el.removeAttribute("animation__grow_valid_scale");
             // this.el.removeAttribute("animation__grow_valid_color");
@@ -368,7 +388,7 @@ AFRAME.registerComponent("valid-selection", {
             // this.el.setAttribute("animation__deflate_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
         };
         this.el.addEventListener("mouseleave", this.event_ml);
-        
+
         this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
             this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
             document.querySelector('#gameManager').emit("nextlevel");
@@ -464,7 +484,7 @@ AFRAME.registerComponent("start-title-manager", {
             gameManager.emit("nextlevel");
         });
     },
-    start: function() {
+    start: function () {
     }
 });
 
