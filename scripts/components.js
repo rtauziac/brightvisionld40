@@ -52,18 +52,18 @@ AFRAME.registerComponent("crazyrems", {
 AFRAME.registerComponent("game-manager", {
     schema: {
         level: {
-            type: "int", default: 0
+            type: "int", default: 8
         }
     },
     init: function () {
         this.allKubes = [];
         this.kube9PositionsIndex = 0;
         this.kube9Positions = [
-            "-0.7 1. -1.5",
-            "-0.7 2.6 -1.5",
-            "0.7 1 -1.5",
-            "0.7 2.6 -1.5",
-            "0 1.8 -1.5"
+            "-0.3 1.5 -1.5",
+            "-0.3 2.1 -1.5",
+            "0.3 1.5 -1.5",
+            "0.3 2.1 -1.5",
+            // "0 1.8 -1.5"
         ]
         setTimeout(() => {
             let startTitle = document.createElement('a-start-title');
@@ -93,7 +93,7 @@ AFRAME.registerComponent("game-manager", {
     tick: function (time, timeDelta) {
         if (this.kube9Timer != undefined) {
             this.kube9Timer += timeDelta;
-            if (this.kube9Timer >= 1450) {
+            if (this.kube9Timer >= 1460) {
                 this.kube9PositionsIndex = (this.kube9PositionsIndex + 1) % this.kube9Positions.length;
                 this.kube9Timer = 0;
                 this.kube9.setAttribute("position", this.kube9Positions[this.kube9PositionsIndex]);
@@ -154,7 +154,7 @@ AFRAME.registerComponent("game-manager", {
         // remove all kubes
         console.log("remove " + this.allKubes.length + " kubes");
         this.allKubes.forEach(element => {
-            element.setAttribute("animation__remove", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 1000; easing: easeOutExpo;")
+            element.setAttribute("animation__remove", "property: scale; autoplay: true; to: 0.0001 0.0001 0.0001; dir: normal; dur: 1000; easing: easeOutExpo;")
             setTimeout(() => {
                 if (element.parentNode != undefined || element.parentNode != null) {
                     // console.log("removing kube");
@@ -219,14 +219,14 @@ AFRAME.registerComponent("game-manager", {
                         var coordUp = { x: (-0.35 * 3.5) + (i * 0.35), y: 2.5, z: -1.5 }
                         var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), i === rndm, { delay: 200 * i, soundEffect: "laugth" });
                         kn.setAttribute("wobble-rotation", "delay: " + (200 * i));
-                        kn.setAttribute("animation__updown", "property: position; easing: easeInOutSine; dir: alternate; loop: true; dur: 2400; delay: " + (i * 300) + " from: " + AFRAME.utils.coordinates.stringify(coord) + "; to: " + AFRAME.utils.coordinates.stringify(coordUp));
+                        kn.setAttribute("animation__updown", "property: position; autoplay: true; easing: easeInOutSine; dir: alternate; loop: true; dur: 2400; delay: " + (i * 300) + " from: " + AFRAME.utils.coordinates.stringify(coord) + "; to: " + AFRAME.utils.coordinates.stringify(coordUp));
                     }
                     break;
 
                 case 7:
                     var rndm = getRandomInt(0, 11);
                     let carousel = document.createElement('a-entity');
-                    carousel.setAttribute("animation__carousel", "property: rotation; dir: normal; dur: 20000; easing: linear; from: 0 0 0; to: 0 360 0; loop: true;");
+                    carousel.setAttribute("animation__carousel", "property: rotation; autoplay: true; dir: normal; dur: 20000; easing: linear; from: 0 0 0; to: 0 360 0; loop: true;");
                     this.el.appendChild(carousel);
                     for (var i = 0; i < 12; i += 1) {
                         // console.log("create kube");
@@ -264,7 +264,7 @@ AFRAME.registerComponent("game-manager", {
                             var coordend = { x: -3, y: 2.6 - (j * 0.35), z: -1.5 - (i * 0.35) }
                             var kn = this.spawnKube(AFRAME.utils.coordinates.stringify(coord), delays[count] === rndm, { delay: 200 * (i + (j * 4)), soundEffect: "laugth" });
                             kn.setAttribute("wobble-rotation", "delay: " + 200 * (i + j * 4));
-                            kn.setAttribute("animation__scrolling", "property: position; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: " + AFRAME.utils.coordinates.stringify(coord) + "; to: " + AFRAME.utils.coordinates.stringify(coordend) + ";");
+                            kn.setAttribute("animation__scrolling", "property: position; autoplay: true; dir: normal; loop: true; easing: linear; dur: 12000; delay:" + (750 * delays[count]) + " from: " + AFRAME.utils.coordinates.stringify(coord) + "; to: " + AFRAME.utils.coordinates.stringify(coordend) + ";");
                         }
                     }
                     break;
@@ -281,8 +281,8 @@ AFRAME.registerComponent("game-manager", {
         this.el.querySelector("#room_decimate_entity").setAttribute("visible", "true");
 
         this.allKubes.forEach(element => {
-            element.setAttribute("animation__decimate_scale", "property: scale; to: 0.0001 0.0001 0.0001; dir: normal; dur: 2500; easing: easeInExpo;")
-            element.setAttribute("animation__decimate_rotation", "property: rotation; to: -400 -400 -400; dir: normal; dur: 2500; easing: easeInExpo;")
+            element.setAttribute("animation__decimate_scale", "property: scale; autoplay: true; to: 0.0001 0.0001 0.0001; dir: normal; dur: 2500; easing: easeInExpo;")
+            element.setAttribute("animation__decimate_rotation", "property: rotation; autoplay: true; to: -400 -400 -400; dir: normal; dur: 2500; easing: easeInExpo;")
             setTimeout(() => {
                 if (element.parentNode != undefined || element.parentNode != null) {
                     // console.log("removing kube");
@@ -305,7 +305,7 @@ AFRAME.registerComponent("game-manager", {
         this.allKubes.forEach(element => {
             element.removeAttribute("animation__wiggle");
             element.removeAttribute("animation__decimate_rotation");
-            element.setAttribute("animation__unboxed_rotation", "property: rotation; to: 0 0 0; dir: normal; dur: 1000; easing: easeOutExpo;")
+            element.setAttribute("animation__unboxed_rotation", "property: rotation; autoplay: true; to: 0 0 0; dir: normal; dur: 1000; easing: easeOutExpo;")
         });
 
         this.el.removeAttribute("sound__rime");
@@ -320,30 +320,52 @@ AFRAME.registerComponent("game-manager", {
 
 // All kinds of kubes
 AFRAME.registerComponent("grow-viral-selection", {
+    schema: {
+        selected: {
+            type: "boolean", default: "false"
+        }
+    },
     init: function () {
         this.event_gv = (event) => {
-            this.el.removeAttribute("sound__deflate");
-            this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
-            this.el.removeAttribute("animation__deflate");
-            this.el.setAttribute("animation__grow_viral", "property: scale; dir: normal; dur: 6530; easing: easeInQuad; to: 3.5, 3.5, 3.5;");
+            if (this.data.selected != true) {
+                this.el.removeAttribute("sound__deflate");
+                this.el.setAttribute("sound__rise", "src: url(sounds/Rise.mp3); autoplay: true; loop: false;");
+                this.el.removeAttribute("animation__deflate");
+                this.el.setAttribute("animation__grow_viral", "property: scale; autoplay: true; dir: normal; dur: 6530; easing: easeInQuad; to: 3.5, 3.5, 3.5;");
+            }
         };
         this.el.addEventListener("mouseenter", this.event_gv);
 
         this.event_le = (event) => {
-            this.el.removeAttribute("animation__grow_viral");
-            this.el.removeAttribute("sound__rise");
-            this.el.setAttribute("animation__deflate", "property: scale; dir: normal; dur: 700; easing: easeOutExpo; to: 1, 1, 1;");
-            if (this.el.components.scale.data.x > 1.2) {
-                this.el.setAttribute("sound__deflate", "src: url(sounds/deflate.mp3); autoplay: true; loop: false;");
+            if (this.data.selected != true) {
+                this.el.removeAttribute("animation__grow_viral");
+                this.el.removeAttribute("sound__rise");
+                this.el.setAttribute("animation__deflate", "property: scale; autoplay: true; dir: normal; dur: 700; easing: easeOutExpo; to: 1, 1, 1;");
+                // if (this.el.components.scale.data.x > 1.2) {
+                    this.el.setAttribute("sound__deflate", "src: url(sounds/deflate.mp3); autoplay: true; loop: false;");
+                // }
             }
         };
         this.el.addEventListener("mouseleave", this.event_le);
 
-        this.el.addEventListener("animation__grow_viral-complete", (event) => {
-            // this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
-            document.querySelector('#gameManager').emit("nextpart");
-            this.el.removeEventListener("mouseenter", this.event_gv);
-            this.el.removeEventListener("mouseleave", this.event_le);
+        // this.el.addEventListener("animation__grow_viral-complete", (event) => {
+        //     // this.el.setAttribute("sound", "src: url(sounds/valid.mp3); autoplay: true;");
+        //     document.querySelector('#gameManager').emit("nextpart");
+        //     this.el.removeEventListener("mouseenter", this.event_gv);
+        //     this.el.removeEventListener("mouseleave", this.event_le);
+        // });
+
+        this.el.addEventListener("animationcomplete", (event) => {
+            if (event.detail.name == "animation__grow_viral") {
+                // console.log("Event " + event.detail.name + " just finished!");
+                this.data.selected = true;
+                if (this.data.soundEffect) {
+                    this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
+                }
+                this.el.removeEventListener("mouseenter", this.event_me);
+                this.el.removeEventListener("mouseleave", this.event_ml);
+                document.querySelector('#gameManager').emit("nextpart");
+            }
         });
     }
 });
@@ -376,7 +398,7 @@ AFRAME.registerComponent("valid-selection", {
             this.el.removeAttribute("animation__appear_scale");
             this.el.removeAttribute("animation__deflate_valid_scale");
             // this.el.removeAttribute("animation__deflate_valid_color");
-            this.el.setAttribute("animation__grow_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1.3, 1.3, 1.3;");
+            this.el.setAttribute("animation__grow_valid_scale", "property: scale; autoplay: true; dir: normal; dur: 1300; easing: easeOutExpo; to: 1.5, 1.5, 1.5;");
             // this.el.setAttribute("animation__grow_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
         };
         this.el.addEventListener("mouseenter", this.event_me);
@@ -384,16 +406,27 @@ AFRAME.registerComponent("valid-selection", {
         this.event_ml = (event) => {
             this.el.removeAttribute("animation__grow_valid_scale");
             // this.el.removeAttribute("animation__grow_valid_color");
-            this.el.setAttribute("animation__deflate_valid_scale", "property: scale; dir: normal; dur: 1300; easing: easeOutExpo; to: 1, 1, 1;");
+            this.el.setAttribute("animation__deflate_valid_scale", "property: scale; autoplay: true; dir: normal; dur: 1300; easing: easeOutExpo; to: 1, 1, 1;");
             // this.el.setAttribute("animation__deflate_valid_color", "property: color; dur: 400; easing: easeOutExpo; to: rgb(0, 0, 0);");
         };
         this.el.addEventListener("mouseleave", this.event_ml);
 
-        this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
-            this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
-            document.querySelector('#gameManager').emit("nextlevel");
-            this.el.removeEventListener("mouseenter", this.event_me);
-            this.el.removeEventListener("mouseleave", this.event_ml);
+        // this.el.addEventListener("animation__grow_valid_scale-complete", (event) => {
+        //     this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
+        //     document.querySelector('#gameManager').emit("nextlevel");
+        //     this.el.removeEventListener("mouseenter", this.event_me);
+        //     this.el.removeEventListener("mouseleave", this.event_ml);
+        // });
+
+        this.el.addEventListener("animationcomplete", (event) => {
+            if (event.detail.name == "animation__grow_valid_scale") {
+                // console.log("Event " + event.detail.name + " just finished!");
+
+                this.el.setAttribute("sound", "src: url(sounds/" + this.data.soundEffect + ".mp3); autoplay: true;");
+                document.querySelector('#gameManager').emit("nextlevel");
+                this.el.removeEventListener("mouseenter", this.event_me);
+                this.el.removeEventListener("mouseleave", this.event_ml);
+            }
         });
     }
 });
@@ -406,7 +439,7 @@ AFRAME.registerComponent("appear-scale", {
     },
     init: function () {
         // console.log("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
-        this.el.setAttribute("animation__appear_scale", "property: scale; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
+        this.el.setAttribute("animation__appear_scale", "property: scale; autoplay: true; dir: normal; dur: 1700; delay: " + this.data.delay + "; easing: easeOutExpo; from: 0 0 0; to: 1 1 1");
     }
 });
 
@@ -420,7 +453,7 @@ AFRAME.registerComponent("wobble-rotation", {
         }
     },
     init: function () {
-        this.el.setAttribute("animation__wiggle", "property: rotation; easing: easeInOutSine; from: -8 -8 -8; to: 8 8 8; dir: alternate; delay: " + this.data.delay + "; dur: " + this.data.duration + "; loop: true;");
+        this.el.setAttribute("animation__wiggle", "property: rotation; autoplay: true; easing: easeInOutSine; from: -8 -8 -8; to: 8 8 8; dir: alternate; delay: " + this.data.delay + "; dur: " + this.data.duration + "; loop: true;");
     }
 });
 
