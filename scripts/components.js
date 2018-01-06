@@ -52,7 +52,7 @@ AFRAME.registerComponent("crazyrems", {
 AFRAME.registerComponent("game-manager", {
     schema: {
         level: {
-            type: "int", default: 8
+            type: "int", default: 0
         }
     },
     init: function () {
